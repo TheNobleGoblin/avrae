@@ -12,7 +12,7 @@ import uuid
 import discord
 from discord.ext import commands
 from discord.ext.commands import BucketType, UserInputError
-from discord.ext.commands.view import StringView, quoted_word
+from discord.ext.commands.view import StringView
 
 from cogs5e.funcs import scripting
 from cogs5e.funcs.scripting import ScriptingEvaluator
@@ -108,7 +108,7 @@ class Customization:
         args = []
         while not view.eof:
             view.skip_ws()
-            args.append(quoted_word(view))
+            args.append(view.get_quoted_word())
         tempargs = args[:]
         new_command = command
         if '%*%' in command:
