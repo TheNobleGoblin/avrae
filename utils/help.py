@@ -15,7 +15,7 @@ from discord.ext.commands.core import Command, GroupMixin
 from discord.ext.commands.formatter import HelpFormatter
 
 
-class Help:
+class Help(commands.Cog):
 
     def __init__(self, bot):
         self._mentions_transforms = {
@@ -25,7 +25,7 @@ class Help:
 
         self._mention_pattern = re.compile('|'.join(self._mentions_transforms.keys()))
 
-        self.formatter = CustomHelpFormatter(width=2000)
+        self.formatter = CustomHelpFormatter(width=2000, show_check_failure=True)
         self.bot = bot
 
     @commands.command(name='help', aliases=['commands'])

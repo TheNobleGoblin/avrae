@@ -26,7 +26,7 @@ CLASS_RESOURCE_NAMES = {"Ki Points": "ki", "Rage Damage": "rageDamage", "Rages":
                         "7th": "level7SpellSlots", "8th": "level8SpellSlots", "9th": "level9SpellSlots"}
 
 
-class CharGenerator:
+class CharGenerator(commands.Cog):
     """Random character generator."""
 
     def __init__(self, bot):
@@ -161,7 +161,7 @@ class CharGenerator:
         # Class Gen
         #    Class Features
         _class = _class or random.choice(c.classes)
-        subclass = subclass or random.choice(_class['subclasses'])
+        subclass = subclass or (random.choice(_class['subclasses']) if _class['subclasses'] else None)
         embed = EmbedWithAuthor(ctx)
         embed.title = f"{_class['name']} ({subclass['name']})"
         embed.add_field(name="Hit Die", value=f"1d{_class['hd']['faces']}")
@@ -240,20 +240,21 @@ class CharGenerator:
                 for piece in text[1:]:
                     inc_fields(piece)
                     embed_queue[-1].add_field(name="\u200b", value=piece)
-        for num in range(num_subclass_features):
-            level_features = subclass['subclassFeatures'][num]
-            for feature in level_features:
-                for entry in feature.get('entries', []):
-                    if not isinstance(entry, dict): continue
-                    if not entry.get('type') == 'entries': continue
-                    fe = {'name': entry['name'],
-                          'text': parse_data_entry(entry['entries'])}
-                    text = [fe['text'][i:i + 1024] for i in range(0, len(fe['text']), 1024)]
-                    inc_fields(text[0])
-                    embed_queue[-1].add_field(name=fe['name'], value=text[0])
-                    for piece in text[1:]:
-                        inc_fields(piece)
-                        embed_queue[-1].add_field(name="\u200b", value=piece)
+        if subclass:
+            for num in range(num_subclass_features):
+                level_features = subclass['subclassFeatures'][num]
+                for feature in level_features:
+                    for entry in feature.get('entries', []):
+                        if not isinstance(entry, dict): continue
+                        if not entry.get('type') == 'entries': continue
+                        fe = {'name': entry['name'],
+                              'text': parse_data_entry(entry['entries'])}
+                        text = [fe['text'][i:i + 1024] for i in range(0, len(fe['text']), 1024)]
+                        inc_fields(text[0])
+                        embed_queue[-1].add_field(name=fe['name'], value=text[0])
+                        for piece in text[1:]:
+                            inc_fields(piece)
+                            embed_queue[-1].add_field(name="\u200b", value=piece)
 
         for embed in embed_queue:
             embed.colour = color
@@ -280,7 +281,7 @@ class CharGenerator:
 
         out = "{6}\n{0}, {1} {7} {2} {3}. {4} Background.\nStat Array: `{5}`\nI have PM'd you full character details.".format(
             name, race.name, _class['name'], final_level, background.name, stats, ctx.message.author.mention,
-            subclass['name'])
+            subclass['name'] if subclass else "")
 
         await loadingMessage.edit(content=out)
 

@@ -46,7 +46,7 @@ PROPS = {"A": "ammunition", "LD": "loading", "L": "light", "F": "finesse", "T": 
 LARGE_THRESHOLD = 200
 
 
-class Lookup:
+class Lookup(commands.Cog):
     """Commands to help look up items, status effects, rules, etc."""
 
     def __init__(self, bot):
@@ -532,9 +532,6 @@ class Lookup:
     @commands.command()
     async def spell(self, ctx, *, name: str):
         """Looks up a spell."""
-        if name.lower().strip() == 'roscoe\'s feast':
-            return await ctx.invoke(self.bot.get_command('patron_roscoe'))
-
         guild_settings = await self.get_settings(ctx.guild)
         pm = guild_settings.get("pm_result", False)
 

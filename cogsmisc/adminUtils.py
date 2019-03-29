@@ -10,12 +10,14 @@ import discord
 from discord.errors import NotFound
 from discord.ext import commands
 
+from utils import checks
+
 from utils.functions import discord_trim
 
 log = logging.getLogger(__name__)
 
 
-class AdminUtils:
+class AdminUtils(commands.Cog):
     """
     Administrative Utilities.
     """
@@ -49,7 +51,7 @@ class AdminUtils:
         await ctx.send(':ok_hand:')
 
     @commands.command(hidden=True)
-    @commands.is_owner()
+    @checks.admin_or_permissions(manage_guild=True)
     async def chanSay(self, ctx, channel: int, *, message: str):
         """Like .say, but works across servers. Requires channel id."""
         chan = self.bot.get_channel(channel)

@@ -12,7 +12,7 @@ import uuid
 import discord
 from discord.ext import commands
 from discord.ext.commands import BucketType, UserInputError
-from discord.ext.commands.view import StringView, quoted_word
+from discord.ext.commands.view import StringView
 
 from cogs5e.funcs import scripting
 from cogs5e.funcs.scripting import ScriptingEvaluator
@@ -23,7 +23,7 @@ from utils.functions import auth_and_chan, clean_content, confirm
 ALIASER_ROLES = ("server aliaser", "dragonspeaker")
 
 
-class Customization:
+class Customization(commands.Cog):
     """Commands to help streamline using the bot."""
 
     def __init__(self, bot):
@@ -34,6 +34,7 @@ class Customization:
             cmds = list(self.bot.all_commands.keys())
             self.bot.rdb.jset('default_commands', cmds)
 
+    @commands.Cog.listener()
     async def on_message(self, message):
         if str(message.author.id) in self.bot.get_cog("AdminUtils").muted:
             return
@@ -108,7 +109,7 @@ class Customization:
         args = []
         while not view.eof:
             view.skip_ws()
-            args.append(quoted_word(view))
+            args.append(view.get_quoted_word())
         tempargs = args[:]
         new_command = command
         if '%*%' in command:

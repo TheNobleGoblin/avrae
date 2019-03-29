@@ -22,7 +22,7 @@ log = logging.getLogger(__name__)
 DM_ROLES = {"dm", "gm", "dungeon master", "game master"}
 
 
-class InitTracker:
+class InitTracker(commands.Cog):
     """
     Initiative tracking commands. Use !help init for more details.
     To use, first start combat in a channel by saying "!init begin".
@@ -479,11 +479,18 @@ class InitTracker:
         await ctx.send(out)
 
     @init.command(name="list", aliases=['summary'])
-    async def listInits(self, ctx):
-        """Lists the combatants."""
+    async def listInits(self, ctx, *args):
+        """Lists the combatants.
+        __Valid Arguments__
+        private - Sends the list in a private message."""
         combat = await Combat.from_ctx(ctx)
-        outStr = combat.get_summary()
-        await ctx.send(outStr, delete_after=60)
+        private = 'private' in args
+        destination = ctx if not private else ctx.author
+        if private and str(ctx.author.id) == combat.dm:
+            outStr = combat.get_summary(True)
+        else:
+            outStr = combat.get_summary()
+        await destination.send(outStr, delete_after=60 if not private else None)
 
     @init.command()
     async def note(self, ctx, name: str, *, note: str = ''):
