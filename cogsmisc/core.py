@@ -14,10 +14,10 @@ from discord.ext import commands
 
 from cogs5e.models.embeds import EmbedWithAuthor
 
-PATRON_EYLESIS = 227168575469780992
+DRAYMIRE = 341160384360611840
 
 
-class Core:
+class Core(commands.Cog):
     """
     Core utilty and general commands.
     """
@@ -26,8 +26,9 @@ class Core:
         self.bot = bot
         self.start_time = time.monotonic()
 
+    @commands.Cog.listener()
     async def on_message(self, message):
-        if message.author.id == PATRON_EYLESIS and message.content.lower().startswith("hey avrae"):
+        if message.author.id == DRAYMIRE and message.content.lower().startswith("hey avrae"):
             await message.channel.send("No, I will not reseed the RNG, even if you gave me all those cookies.")
             random.seed()  # I lied
 
@@ -52,16 +53,9 @@ class Core:
         await pong.edit(content="Pong.\nPing = {} ms.".format(msec))
 
     @commands.command()
-    async def invite(self, ctx):
-        """Prints a link to invite Avrae to your server."""
-        await ctx.send(
-            "You can invite Avrae to your server here:\n"
-            "https://discordapp.com/oauth2/authorize?&client_id=261302296103747584&scope=bot&permissions=36727808")
-
-    @commands.command()
     async def donate(self, ctx):
         """Prints a link to donate to the bot developer."""
-        await ctx.send("You can donate to me here:\n<https://www.paypal.me/avrae>\n\u2764")
+        await ctx.send("@zhu.exe#4211 created the base code for Avrae. You can donate to him here:\n<https://www.paypal.me/avrae>\n\u2764")
 
     @commands.command(aliases=['stats', 'info'])
     async def about(self, ctx):

@@ -23,7 +23,7 @@ from utils.functions import auth_and_chan, clean_content, confirm
 ALIASER_ROLES = ("server aliaser", "dragonspeaker")
 
 
-class Customization:
+class Customization(commands.Cog):
     """Commands to help streamline using the bot."""
 
     def __init__(self, bot):
@@ -34,6 +34,7 @@ class Customization:
             cmds = list(self.bot.all_commands.keys())
             self.bot.rdb.jset('default_commands', cmds)
 
+    @commands.Cog.listener()
     async def on_message(self, message):
         if str(message.author.id) in self.bot.get_cog("AdminUtils").muted:
             return
