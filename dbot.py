@@ -88,7 +88,7 @@ class Credentials:
 
 desc = '''Avrae, a D&D 5e utility bot made by @zhu.exe#4211.
 Edited by @Draymire#1049.
-Love the bot? Donate to Zhu [here](https://www.paypal.me/avrae)! \u2764
+Love the bot? Donate to me [here (PayPal)](https://www.paypal.me/avrae) or [here (Patreon)](https://www.patreon.com/zhuexe)! \u2764
 '''
 bot = Avrae(prefix=get_prefix, description=desc, pm_help=True,
             shard_count=SHARD_COUNT, testing=TESTING, activity=discord.Game(name='D&D 5e | !help'))
@@ -149,7 +149,8 @@ async def on_command_error(ctx, error):
         if isinstance(original, EvaluationError):  # PM an alias author tiny traceback
             e = original.original
             if not isinstance(e, AvraeException):
-                tb = f"```py\n{''.join(traceback.format_exception(type(e), e, e.__traceback__, limit=0, chain=False))}\n```"
+                tb = f"```py\n" \
+                    f"{''.join(traceback.format_exception(type(e), e, e.__traceback__, limit=0, chain=False))}\n```"
                 try:
                     await ctx.author.send(tb)
                 except Exception as e:

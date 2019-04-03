@@ -12,7 +12,7 @@ import discord
 import psutil
 from discord.ext import commands
 
-from cogs5e.models.embeds import EmbedWithAuthor
+"""from cogs5e.models.embeds import EmbedWithAuthor"""
 
 DRAYMIRE = 341160384360611840
 
@@ -55,7 +55,8 @@ class Core(commands.Cog):
     @commands.command()
     async def donate(self, ctx):
         """Prints a link to donate to the bot developer."""
-        await ctx.send("@zhu.exe#4211 created the base code for Avrae. You can donate to him here:\n<https://www.paypal.me/avrae>\n\u2764")
+        await ctx.send("You can donate to @zhu.exe#4211 on PayPal (<https://www.paypal.me/avrae>) "
+                       "or Patreon (<https://www.patreon.com/zhuexe>)!\n\u2764")
 
     @commands.command(aliases=['stats', 'info'])
     async def about(self, ctx):

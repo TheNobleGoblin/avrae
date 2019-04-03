@@ -314,13 +314,12 @@ class GameTrack(commands.Cog):
 
     @spellbook.command(name='add')
     async def spellbook_add(self, ctx, *, spell_name):
-        """Adds a spell to the spellbook override. If character is live, will add to sheet as well."""
+        """Adds a spell to the spellbook override."""
         spell = await select_spell_full(ctx, spell_name)
         character = await Character.from_ctx(ctx)
         character.add_known_spell(spell)
         await character.commit(ctx)
-        live = "Spell added to Dicecloud!" if character.live else ''
-        await ctx.send(f"{spell.name} added to known spell list!\n{live}")
+        await ctx.send(f"{spell.name} added to known spell list!")
 
     @spellbook.command(name='addall', hidden=True)
     async def spellbook_addall(self, ctx):
@@ -554,7 +553,9 @@ class GameTrack(commands.Cog):
         -phrase [phrase] - adds flavor text.
         -title [title] - changes the title of the cast. Replaces [sname] with spell name.
         -dur [duration] - changes the duration of any effect applied by the spell.
-        int/wis/cha - different skill base for DC/AB (will not account for extra bonuses)"""
+        -mod [spellcasting mod] - sets the value of the spellcasting ability modifier.
+        int/wis/cha - different skill base for DC/AB (will not account for extra bonuses)
+        """
         try:
             await ctx.message.delete()
         except:

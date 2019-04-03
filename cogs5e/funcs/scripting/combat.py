@@ -78,6 +78,7 @@ class SimpleCombatant:
             self.initmod = self._combatant.initMod
             self.temphp = self._combatant.temphp
             self.resists = self._combatant.resists
+            self.attacks = self._combatant.attacks
         else:
             self.ac = None
             self.hp = None
@@ -85,6 +86,7 @@ class SimpleCombatant:
             self.initmod = None
             self.temphp = None
             self.resists = None
+            self.attacks = None
         self.init = self._combatant.init
         self.name = self._combatant.name
         self.note = self._combatant.notes
@@ -182,12 +184,13 @@ class SimpleCombatant:
             return SimpleEffect(effect)
         return None
 
-    def add_effect(self, name: str, args: str, duration: int = -1, concentration: bool = False, parent=None):
+    def add_effect(self, name: str, args: str, duration: int = -1, concentration: bool = False, parent=None,
+                   end: bool = False):
         existing = self._combatant.get_effect(name, True)
         if existing:
             existing.remove()
         effectObj = Effect.new(self._combatant.combat, self._combatant, duration=duration, name=name, effect_args=args,
-                               concentration=concentration)
+                               concentration=concentration, tick_on_end=end)
         if parent:
             effectObj.set_parent(parent._effect)
         self._combatant.add_effect(effectObj)

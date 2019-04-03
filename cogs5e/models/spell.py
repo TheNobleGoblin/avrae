@@ -28,9 +28,9 @@ class Automation:
         return None
 
     async def run(self, ctx, embed, caster, targets, args, combat=None, spell=None, conc_effect=None, ab_override=None,
-                  dc_override=None):
+                  dc_override=None, spell_override=None):
         autoctx = AutomationContext(ctx, embed, caster, targets, args, combat, spell, conc_effect, ab_override,
-                                    dc_override)
+                                    dc_override, spell_override)
         for effect in self.effects:
             effect.run(autoctx)
 
@@ -45,7 +45,7 @@ class Automation:
 
 class AutomationContext:
     def __init__(self, ctx, embed, caster, targets, args, combat, spell, conc_effect=None, ab_override=None,
-                 dc_override=None):
+                 dc_override=None, spell_override=None):
         self.ctx = ctx
         self.embed = embed
         self.caster = caster
@@ -75,9 +75,9 @@ class AutomationContext:
             self.character = caster
 
         if self.character:
-            self.evaluator = SpellEvaluator.with_character(self.character)
+            self.evaluator = SpellEvaluator.with_character(self.character, spell_override=spell_override)
         else:
-            self.evaluator = SpellEvaluator.with_caster(caster)
+            self.evaluator = SpellEvaluator.with_caster(caster, spell_override=spell_override)
 
         self.combatant = None
         if isinstance(caster, Combatant):
@@ -206,7 +206,7 @@ class AutomationTarget:
             else:
                 autoctx.footer_queue("Dealt {} damage to {}!".format(amount, self.target.name))
             if self.target.is_concentrating() and amount > 0:
-                autoctx.queue(f"**Concentration**: DC {int(max(amount/2, 10))}")
+                autoctx.queue(f"**Concentration**: DC {int(max(amount / 2, 10))}")
         elif isinstance(self.target, Character):
             self.target.modify_hp(-amount)
             autoctx.footer_queue("{}: {}".format(self.target.get_name(), self.target.get_hp_str()))
@@ -331,7 +331,7 @@ class Attack(Effect):
 
         sab = explicit_bonus or autoctx.ab_override or autoctx.caster.spellcasting.sab
 
-        if not sab:
+        if not (sab or b):
             raise NoSpellAB()
 
         # roll attack(s) against autoctx.target
@@ -868,7 +868,7 @@ class Spell:
             embed = EmbedWithAuthor(ctx)
             embed.title = "Cannot cast spell!"
             embed.description = "Not enough spell slots remaining, or spell not in known spell list!\n" \
-                                f"Use `{ctx.prefix}game longrest` to restore all spell slots if this is a character, " \
+                f"Use `{ctx.prefix}game longrest` to restore all spell slots if this is a character, " \
                                 "or pass `-i` to ignore restrictions."
             if l > 0:
                 embed.add_field(name="Spell Slots", value=caster.remaining_casts_of(self, l))
@@ -885,14 +885,22 @@ class Spell:
             character = caster
 
         # base stat stuff
+        mod_arg = args.last("mod", type_=int)
         dc_override = None
         ab_override = None
+        spell_override = None
         stat_override = ''
-        if character and any(args.last(s, type_=bool) for s in ("str", "dex", "con", "int", "wis", "cha")):
+        if mod_arg is not None:
+            mod = mod_arg
+            dc_override = 8 + mod + character.get_prof_bonus()
+            ab_override = mod + character.get_prof_bonus()
+            spell_override = mod
+        elif character and any(args.last(s, type_=bool) for s in ("str", "dex", "con", "int", "wis", "cha")):
             base = next(s for s in ("str", "dex", "con", "int", "wis", "cha") if args.last(s, type_=bool))
             mod = character.get_mod(base)
             dc_override = 8 + mod + character.get_prof_bonus()
             ab_override = mod + character.get_prof_bonus()
+            spell_override = mod
             stat_override = f" with {verbose_stat(base)}"
 
         # begin setup
@@ -919,7 +927,7 @@ class Spell:
 
         if self.automation and self.automation.effects:
             await self.automation.run(ctx, embed, caster, targets, args, combat, self, conc_effect=conc_effect,
-                                      ab_override=ab_override, dc_override=dc_override)
+                                      ab_override=ab_override, dc_override=dc_override, spell_override=spell_override)
         else:
             text = self.description
             if len(text) > 1020:
