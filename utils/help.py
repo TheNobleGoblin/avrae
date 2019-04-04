@@ -12,7 +12,7 @@ from discord.errors import Forbidden
 from discord.ext import commands
 from discord.ext.commands.cooldowns import BucketType
 from discord.ext.commands.core import Command, GroupMixin
-from discord.ext.commands.formatter import HelpFormatter
+from discord.ext.commands.help import HelpCommand
 
 
 class Help(commands.Cog):
@@ -104,7 +104,7 @@ class Help(commands.Cog):
                 await ctx.channel.send('I have sent help to your PMs.')
 
 
-class CustomHelpFormatter(HelpFormatter):
+class CustomHelpFormatter(HelpCommand):
 
     def _get_subcommands(self, commands):
         out = []
