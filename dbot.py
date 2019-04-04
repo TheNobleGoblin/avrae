@@ -37,9 +37,9 @@ def get_prefix(b, message):
 
 
 class Avrae(commands.AutoShardedBot):
-    def __init__(self, prefix, formatter=None, description=None, pm_help=False, testing=False,
+    def __init__(self, prefix, formatter=None, description=None, testing=False,
                  **options):
-        super(Avrae, self).__init__(prefix, formatter, description, pm_help, **options)
+        super(Avrae, self).__init__(prefix, formatter, description, **options)
         self.remove_command("help")
         self.testing = testing
         self.state = "init"
@@ -86,12 +86,11 @@ class Credentials:
             self.token = os.environ.get("ALPHA_TOKEN")
 
 
-desc = '''Avrae, a D&D 5e utility bot made by @zhu.exe#4211.
-Edited by @Draymire#1049.
+desc = '''SIvrae, a D&D 5e utility bot made by @zhu.exe#4211 and Modified by @Draymire#1049.
 Love the bot? Donate to me [here (PayPal)](https://www.paypal.me/avrae) or [here (Patreon)](https://www.patreon.com/zhuexe)! \u2764
 '''
-bot = Avrae(prefix=get_prefix, description=desc, pm_help=True,
-            shard_count=SHARD_COUNT, testing=TESTING, activity=discord.Game(name='D&D 5e | !help'))
+bot = Avrae(prefix=get_prefix, description=desc,
+            shard_count=SHARD_COUNT, testing=TESTING, activity=discord.Game(name='D&D 5e'))
 
 log_formatter = logging.Formatter('%(asctime)s %(levelname)s:%(name)s: %(message)s')
 handler = logging.StreamHandler(sys.stdout)
